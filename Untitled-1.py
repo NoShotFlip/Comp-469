@@ -156,7 +156,32 @@ class PuzzleGraph:
                     heapq.heappush(heap, (heuristic(neighbor, self.goal_state), neighbor, path + [current_state]))
 
         return None
+    def ids(self):
+        """
+        Iterative Deepening Search (IDS) to find a path to the goal state.
+        """
+        def dls(state, path, depth):
+            if depth == 0:
+                if state == self.goal_state:
+                    return path + [state]
+                return None
+            if depth > 0:
+                for neighbor in self.get_neighbors(state):
+                    if neighbor not in visited:
+                        visited.add(neighbor)
+                        result = dls(neighbor, path + [state], depth - 1)
+                        if result:
+                            return result
+                        visited.remove(neighbor)
+            return None
 
+        depth = 0
+        while True:
+            visited = set()
+            result = dls(self.initial_state, [], depth)
+            if result:
+                return result
+            depth += 1
 
 
     def measure_performance(self, search_algorithm):
@@ -194,3 +219,7 @@ puzzle_graph.measure_performance(puzzle_graph.a_star)
 # Measure performance using Greedy Best-First
 print("Greedy Best-First Performance:")
 puzzle_graph.measure_performance(puzzle_graph.greedy_best_first)
+
+# Measure performance using Iterative Deepening Search
+print("Iterative Deepening Search Performance:")
+puzzle_graph.measure_performance(puzzle_graph.ids)
