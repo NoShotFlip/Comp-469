@@ -2,6 +2,13 @@ import networkx as nx
 import heapq
 from collections import deque
 
+def heuristic (state,goal):
+        """
+        Heuristic function for A* algorithm. Computes the Manhattan distance between the current state and the goal state.
+        """
+        return sum(abs(b % 3 - g % 3) + abs(b // 3 - g // 3)
+                    for b, g in ((state.index(i), goal.index(i)) for i in range(1, 9)))
+
 class PuzzleGraph:
     def __init__(self, initial_state, goal_state):
         self.initial_state = tuple(initial_state)
@@ -97,6 +104,58 @@ class PuzzleGraph:
                     stack.append((neighbor,path+[current_state]))
         return None
 
+    
+
+    def a_star(self):
+        """
+        A* Search to find the optimal path to the goal state.
+        """
+        heap = [(heuristic(self.initial_state, self.goal_state), 0, self.initial_state, [])]
+        visited = set()
+
+        while heap:
+            h, cost , current_state , path  = heapq.heappop(heap)
+            if current_state == self.goal_state:
+                return path + [current_state]
+            if current_state in visited:
+                continue
+            visited.add(current_state)
+
+            neighbors = self.get_neighbors(current_state)
+
+            if neighbors is None:
+                print(f"Error: get_neighbors returned None for state {current_state}")  # Debugging statement
+                continue
+            for neighbor in neighbors:
+                if neighbor not in visited: 
+                    heapq.heappush(heap, (heuristic(neighbor, self.goal_state) + cost + 1, cost + 1, neighbor, path + [current_state]))
+        return None
+    
+    def greedy_best_first(self):
+        """
+        Greedy Best-First Search to find a path to the goal state.
+        """
+        heap = [(heuristic(self.initial_state, self.goal_state), self.initial_state, [])]
+        visited = set()
+
+        while heap:
+            h, current_state,path = heapq.heappop(heap)
+            if current_state == self.goal_state:
+                return path + [current_state]
+            if current_state in visited:
+                continue
+            visited.add(current_state)
+
+            neighbors= self.get_neighbors(current_state)
+            if neighbors is None:
+                print(f"Error: get_neighbors returned None for state {current_state}")  # Debugging statement
+                continue
+
+            for neighbor in neighbors:
+                if neighbor not in visited:
+                    heapq.heappush(heap, (heuristic(neighbor, self.goal_state), neighbor, path + [current_state]))
+
+        return None
 
 
 
@@ -122,6 +181,16 @@ goal_state = [1, 2, 3, 4, 5, 6, 7, 8, 0]
 
 # Create a PuzzleGraph object and measure performance using BFS
 puzzle_graph = PuzzleGraph(initial_state, goal_state)
+print("BFS Performance:")
 puzzle_graph.measure_performance(puzzle_graph.bfs)
 # Measure performance using DFS
+print("DFS Performance:")
 puzzle_graph.measure_performance(puzzle_graph.dfs)
+
+# Measure performance using A*
+print("A* Performance:")
+puzzle_graph.measure_performance(puzzle_graph.a_star)
+
+# Measure performance using Greedy Best-First
+print("Greedy Best-First Performance:")
+puzzle_graph.measure_performance(puzzle_graph.greedy_best_first)
