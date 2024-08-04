@@ -71,6 +71,34 @@ class PuzzleGraph:
                     queue.append((neighbor, path + [current_state]))
 
         return None
+    
+    def dfs(self):
+        """
+        Depth-First Search (DFS) to find a path to the goal state.
+        """
+        stack = [(self.initial_state,[])]
+        visited = set()
+        
+        while stack :
+            current_state , path = stack.pop()
+            if current_state == self.goal_state:
+                return path + [current_state]
+            if current_state in visited:
+                continue
+            
+            visited.add(current_state)
+
+            neighbors = self.get_neighbors(current_state)
+            if neighbors is None:
+               print(f"Error: get_neighbors returned None for state {current_state}")  # Debugging statement
+               continue
+            for neighbor in neighbors:
+                if neighbor not in visited:
+                    stack.append((neighbor,path+[current_state]))
+        return None
+
+
+
 
     def measure_performance(self, search_algorithm):
         import time
@@ -95,3 +123,5 @@ goal_state = [1, 2, 3, 4, 5, 6, 7, 8, 0]
 # Create a PuzzleGraph object and measure performance using BFS
 puzzle_graph = PuzzleGraph(initial_state, goal_state)
 puzzle_graph.measure_performance(puzzle_graph.bfs)
+# Measure performance using DFS
+puzzle_graph.measure_performance(puzzle_graph.dfs)
