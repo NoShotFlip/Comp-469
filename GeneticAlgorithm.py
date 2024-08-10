@@ -96,6 +96,9 @@ def reproduce(parent1, parent2):
     Creates a new board configuration from the two parent configurations.
     The child gets parent1's columns from 0 to crossover_point, and parent2's
     columns from crossover_point + 1 to 7
+
+    Returns:
+        list of list of int: the child board reproduced
     """
     crossover_point = random.randint(0, 7)
     child = create_board()
@@ -110,6 +113,26 @@ def reproduce(parent1, parent2):
             for row in range(8):
                 child[row][i] = parent2[row][i]
     return child
+
+
+def mutate(board):
+    """
+    Randomly mutates the board by changing the position
+    of one queen in a column.
+
+    Returns:
+        list of list of int: the mutated board
+    """
+    # choose a random column
+    col = random.randint(0, 7)
+
+    # for each row in that column set it to 0
+    for r in col:
+        board[r][col] = 0
+    # now put a queen in a random row in that column
+    row = random.randint(0, 7)
+    board[row][col] = 1
+    return board
 
 
 def genetic_algorithm(board):
