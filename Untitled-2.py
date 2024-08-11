@@ -48,7 +48,7 @@ class PuzzleGraph:
             new_state = list(state)
             new_state[empty_index], new_state[new_index] = new_state[new_index], new_state[empty_index]
             neighbors.append(tuple(new_state))
-        print(f"Neighbors of {state}: {neighbors}")  # Debugging statement
+       
         return neighbors
 
     def bfs(self):
