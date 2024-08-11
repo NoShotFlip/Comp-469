@@ -1,5 +1,6 @@
 import math
 import random
+import time
 
 
 def print_board(board):
@@ -106,10 +107,27 @@ def simulated_annealing(board, max_steps=1000, initial_temp=100.0, cooling_rate=
 
     return current_board, current_attacks
 
+def measure_performance_simulated_annealing(runs=100):
+    start_time = time.time()
+    solutions_found = 0
+    for _ in range(runs):
+        initial_board = place_queens(create_board())
+        solution, attacks = simulated_annealing(initial_board)
+        if attacks == 0:
+            solutions_found += 1
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    success_rate = solutions_found / runs
+    return elapsed_time, success_rate
+
+
+
 
 initial_board = place_queens(create_board())
 solution, attacks = simulated_annealing(initial_board)
 
+elapsed_time, success_rate = measure_performance_simulated_annealing()
+print(f"Simulated Annealing Performance: Time = {elapsed_time:.2f}s, Success Rate = {success_rate:.2%}")
 print("Initial Board:")
 print_board(initial_board)
 print("Solution Board:")

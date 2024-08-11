@@ -1,5 +1,5 @@
 import random
-
+import time
 
 def print_board(board):
     """
@@ -100,7 +100,21 @@ def hill_climb(board):
         current_attacks = next_attacks
     return current_board, current_attacks
 
+def measure_performance_hill_climb(runs=100):
+    start_time = time.time()
+    solutions_found = 0
+    for _ in range(runs):
+        initial_board = place_queens(create_board())
+        solution, attacks = hill_climb(initial_board)
+        if attacks == 0:
+            solutions_found += 1
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    success_rate = solutions_found / runs
+    return elapsed_time, success_rate
 
+elapsed_time, success_rate = measure_performance_hill_climb()
+print(f"Hill-Climbing Performance: Time = {elapsed_time:.2f}s, Success Rate = {success_rate:.2%}")
 initial_board = place_queens(create_board())
 solution, attacks = hill_climb(initial_board)
 

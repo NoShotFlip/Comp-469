@@ -1,5 +1,5 @@
 import random
-
+import time
 
 def print_board(board):
     """
@@ -181,7 +181,22 @@ def genetic_algorithm(population_size=50, mutation_rate=0.1, max_generations=500
     # if we reached the max generations, return the best solution we have
     return population[0], get_attacking_pairs(population[0])
 
+def measure_performance_genetic_algorithm(runs=100):
+    start_time = time.time()
+    solutions_found = 0
+    for _ in range(runs):
+        solution, attacks = genetic_algorithm()
+        if attacks == 0:
+            solutions_found += 1
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    success_rate = solutions_found / runs
+    return elapsed_time, success_rate
 
+# Measure the performance of the genetic algorithm
+elapsed_time, success_rate = measure_performance_genetic_algorithm()
+
+print(f"Genetic Algorithm Performance: Time = {elapsed_time:.2f}s, Success Rate = {success_rate:.2%}")
 # default arguments used
 solution, attacks = genetic_algorithm()
 
