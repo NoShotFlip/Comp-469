@@ -127,7 +127,7 @@ def mutate(board):
     col = random.randint(0, 7)
 
     # for each row in that column set it to 0
-    for r in col:
+    for r in range(8):
         board[r][col] = 0
     # now put a queen in a random row in that column
     row = random.randint(0, 7)
@@ -135,15 +135,56 @@ def mutate(board):
     return board
 
 
-def genetic_algorithm(board):
-    pass
+def genetic_algorithm(population_size=50, mutation_rate=0.1, max_generations=500):
+    """
+    Creates a solution to the 8-queens problem using a genetic algorithm.
+
+    Args:
+        population_size: int: The number of boards in the population.
+                                         defaults to 50
+        mutation_rate float: The probability of mutation occurring during reproduction.
+                                         defaults to 0.1
+        max_generations int: The maximum number of generations to run the algorithm.
+                                         defaults to 500
+
+    Returns:
+        tuple: A tuple containing: the solution board and number of attacks
+    """
+    # initialize the starting population
+    population = [place_queens(create_board()) for _ in range(population_size)]
+
+    for generation in range(max_generations):
+        # sort by fitness (evolution)
+        population.sort(key=lambda board: fitness(board), reverse=True)
+        # if we find a solution terminate
+        if get_attacking_pairs(population[0]) == 0:
+            return population[0], get_attacking_pairs(population[0])
+        # only take the best 2 individuals from this generation (elitism)
+        new_population = population[:2]
+        # generate the rest of the new population, because we culled the rest
+        while len(new_population) < population_size:
+            # choose two parents weighted based on fitness
+            parent1 = random.choices(
+                population, weights=[fitness(board) for board in population], k=1
+            )[0]
+            parent2 = random.choices(
+                population, weights=[fitness(board) for board in population], k=1
+            )[0]
+            child = reproduce(parent1, parent2)
+            # random mutation may occur to the child with low probability
+            if random.random() < mutation_rate:
+                child = mutate(child)
+
+            new_population.append(child)
+        # overwrite the population to the new one
+        population = new_population
+    # if we reached the max generations, return the best solution we have
+    return population[0], get_attacking_pairs(population[0])
 
 
-initial_board = place_queens(create_board())
-solution, attacks = genetic_algorithm(initial_board)
+# default arguments used
+solution, attacks = genetic_algorithm()
 
-print("Initial Board:")
-print_board(initial_board)
 print("Solution Board:")
 print_board(solution)
 print(f"Attacking Pairs: {attacks}")
