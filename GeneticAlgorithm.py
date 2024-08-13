@@ -108,9 +108,12 @@ def optimized_genetic_algorithm(
 def measureperformance_genetic_algorithm(runs=10):
     start_time = time.time()
     solutions_found = 0
-    for _ in range(runs):
+    for run in range(runs):
         solution, attacks = optimized_genetic_algorithm()
         if attacks == 0:
+            print(f"Found solution on run {run}")
+            print(f"Num attacks:{attacks}")
+            print_board(solution)
             solutions_found += 1
     end_time = time.time()
     elapsed_time = end_time - start_time
